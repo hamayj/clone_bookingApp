@@ -1,6 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import authRoute from "./routes/auth.js" // auth에서 router처리 해준 것 import
+// import usersRoute from "./routes/users.js"
+import hotelsRoute from "./routes/hotels.js"
+// import roomsRoute from "./routes/rooms.js"
+
 
 const app = express();
 dotenv.config();
@@ -14,7 +19,7 @@ const connect = async () => {
         //console.log("connected to mongoDB."); // 이거 굳이 설정안해도 하단부 코드에서 콘솔 띄워주네요.
       } catch (error) {
         throw error; // throw? 원래 정의돼 있는 함수야?
-      } // 이 함수에서 막히는 줄 알고, 설마 오타..? 하면서 정화꺼 붙여넣어봤는데 똑같이 안먹음 ㅠㅠ
+      } // 여기까지 에러 없음.
 }
 
 mongoose.connection.on("disconnected", () => {
@@ -25,10 +30,18 @@ mongoose.connection.on("connected", () => {
     console.log("mongoDB connected.")
 }) // mongoDB에 연결된 경우
 
+// middlewares
 
-app.get("/", (req, res) => {
-    res.send("hello first request")
-})
+app.use(express.json()); // json 사용을 위함.
+app.use("/api/auth", authRoute); // /api/auth 라는 endpoint에서 authRoute를 사용한다.
+app.use("/api/users", authRoute);
+app.use("/api/hotels", hotelsRoute);
+app.use("/api/rooms", authRoute);
+
+
+
+
+
 
 app.listen(8000, () => {
     connect(); // 서버 연결될 때 몽구스도 함께 연결시켜주자.
